@@ -20,6 +20,7 @@ Currently kzenv supports the following OSes
 Install via Homebrew
 
 ```console
+$ brew tap lzecca78/kzenv
 $ brew install kzenv
 ```
 
