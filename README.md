@@ -104,8 +104,6 @@ Set the mechanism used for displaying download progress when downloading kustomi
 
 ##### `KZENV_REMOTE`
 
-String (Default: https://releases.hashicorp.com)
-
 To install from a remote other than the default
 
 ```console
