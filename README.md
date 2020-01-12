@@ -66,67 +66,31 @@ Install a specific version of kustomize. Available options for version:
 - `min-required` is a syntax to recursively scan your kustomize files to detect which version is minimally required. See [required_version](https://www.kustomize.io/docs/configuration/kustomize.html) docs. Also [see min-required](#min-required) section below.
 
 ```console
-$ kzenv install 0.7.0
+$ kzenv install 1.0.11
 $ kzenv install latest
 $ kzenv install latest:^0.8
-$ kzenv install min-required
 $ kzenv install
 ```
-
-If `shasum` is present in the path, kzenv will verify the download against Hashicorp's published sha256 hash.
-If [keybase](https://keybase.io/) is available in the path it will also verify the signature for those published hashes using Hashicorp's published public key.
-
-You can opt-in to using GnuPG tools for PGP signature verification if keybase is not available:
-
-```console
-$ echo 'trust-kzenv: yes' > ~/.tfenv/use-gpgv
-$ kzenv install
-```
-
-The `trust-kzenv` directive means that verification uses a copy of the
-Hashicorp OpenPGP key found in the kzenv repository. Skipping that directive
-means that the Hashicorp key must be in the existing default trusted keys.
-Use the file `~/.kzenv/use-gnupg` to instead invoke the full `gpg` tool and
-see web-of-trust status; beware that a lack of trust path will not cause a
-validation failure.
 
 #### .kustomize-version
 
 If you use a [.kustomize-version file](#kustomize-version-file), `kzenv install` (no argument) will install the version written in it.
 
-#### min-required
-
-Please note that we don't do semantic version range parsing but use first ever found version as the candidate for minimally required one. It is up to the user to keep the definition reasonable. I.e.
-
-```kustomize
-// this will detect 0.12.3
-kustomize {
-  required_version  = "<0.12.3, >= 0.10.0"
-}
-```
-
-```kustomize
-// this will detect 0.10.0
-kustomize {
-  required_version  = ">= 0.10.0, <0.12.3"
-}
-```
-
 ### Environment Variables
 
 #### kzenv
 
-##### `kzenv_ARCH`
+##### `KZENV_ARCH`
 
 String (Default: amd64)
 
-Specify architecture. Architecture other than the default amd64 can be specified with the `kzenv_ARCH` environment variable
+Specify architecture. Architecture other than the default amd64 can be specified with the `KZENV_ARCH` environment variable
 
 ```console
-kzenv_ARCH=arm tfenv install 0.7.9
+KZENV_ARCH=arm tfenv install 0.7.9
 ```
 
-##### `kzenv_CURL_OUTPUT`
+##### `KZENV_CURL_OUTPUT`
 
 Integer (Default: 2)
 
@@ -136,16 +100,16 @@ Set the mechanism used for displaying download progress when downloading kustomi
 - 1: Use curl default
 - 0: Pass `-s` to curl
 
-##### `kzenv_DEBUG`
+##### `KZENV_DEBUG`
 
-##### `kzenv_REMOTE`
+##### `KZENV_REMOTE`
 
 String (Default: https://releases.hashicorp.com)
 
 To install from a remote other than the default
 
 ```console
-kzenv_REMOTE=https://example.jfrog.io/artifactory/hashicorp
+KZENV_REMOTE=https://example.jfrog.io/artifactory/hashicorp
 ```
 
 #### Bashlog Logging Library
@@ -277,10 +241,7 @@ Switch a version to use
 
 `latest:<regex>` is a syntax to use latest installed version matching regex (used by grep -e)
 
-`min-required` will switch to the version minimally required by your kustomize sources (see above `kzenv install`)
-
 ```console
-$ kzenv use min-required
 $ kzenv use 0.7.0
 $ kzenv use latest
 $ kzenv use latest:^0.8
@@ -305,14 +266,6 @@ List installed versions
 ```console
 % kzenv list
 * 0.10.7 (set by /opt/kzenv/version)
-  0.9.0-beta2
-  0.8.8
-  0.8.4
-  0.7.0
-  0.7.0-rc4
-  0.6.16
-  0.6.2
-  0.6.1
 ```
 
 ### kzenv list-remote
@@ -321,25 +274,6 @@ List installable versions
 
 ```console
 % kzenv list-remote
-0.9.0-beta2
-0.9.0-beta1
-0.8.8
-0.8.7
-0.8.6
-0.8.5
-0.8.4
-0.8.3
-0.8.2
-0.8.1
-0.8.0
-0.8.0-rc3
-0.8.0-rc2
-0.8.0-rc1
-0.8.0-beta2
-0.8.0-beta1
-0.7.13
-0.7.12
-...
 ```
 
 ## .kustomize-version file
