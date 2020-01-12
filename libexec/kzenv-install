@@ -145,7 +145,7 @@ keybase_bin="$(command -v keybase 2>/dev/null)";
 shasum_bin="$(command -v shasum 2>/dev/null)";
 
 KZENV_REMOTE="${KZENV_REMOTE:-https://api.github.com/repos/kubernetes-sigs/kustomize/releases?per_page=100}";
-version_url=$(curlw -sf "${KZENV_REMOTE}" |grep browser_download| grep ${version}| grep ${os}| awk '{print $2}'|tr -d '"');
+version_url=$(curlw -sf "${KZENV_REMOTE}" |grep browser_download| grep ${version}|grep 'kustomize'| grep ${os}| awk '{print $2}'|tr -d '"');
 echo version_url is ${version_url}
 
 shasums_name="kustomize_${version}_SHA256SUMS";
@@ -176,15 +176,31 @@ case "${KZENV_CURL_OUTPUT:-2}" in
     ;;
 esac;
 
-binary_name="kustomize_${version}_${os}"
+kz_name="kustomize_${version}_${os}"
+tarball_file=0
+
+if [[ $version_url = *.tar.gz ]]
+then
+    kustomize_name_file="${kz_name}.tar.gz"
+    tarball_file=1
+else
+    kustomize_name_file="${kz_name}"
+fi
 
 log 'info' "Downloading release binary from ${version_url}";
-curlw ${curl_progress} -L -f -o "${download_tmp}/${binary_name}" "${version_url}" || log 'error' 'Binary download failed';
+curlw ${curl_progress} -L -f -o "${download_tmp}/${kustomize_name_file}" "${version_url}" || log 'error' 'Binary download failed';
 
 mkdir -p "${dst_path}" || log 'error' "Failed to make directory ${dst_path}";
 
-declare mv_output="$(mv "${download_tmp}/${binary_name}" "${dst_path}/kustomize" && chmod +x "${dst_path}/kustomize"  || log 'error' 'Binary copy failed')";
-printf '%s\n' "${mv_output}";
+if [ $tarball_file = 0 ]
+then
+   declare mv_output="$(mv "${download_tmp}/${kustomize_name_file}" "${dst_path}/kustomize" && chmod +x "${dst_path}/kustomize"  || log 'error' 'Binary copy failed')";
+   printf '%s\n' "${mv_output}";
+else
+   log 'info' "Found tar file! extracting it"
+   declare untar_output="$(tar -C "${dst_path}/" -xzf "${download_tmp}/${kustomize_name_file}"  || log 'error' 'Tarball extract process failed')";
+   printf '%s\n' "${untar_output}";
+fi
 
 log 'info' "Installation of kustomize v${version} successful";
 kzenv use "${version}";
