@@ -3,3 +3,4 @@ version
 .kustomize-version
 bin/kustomize-*
 .*.swp
+.idea/
