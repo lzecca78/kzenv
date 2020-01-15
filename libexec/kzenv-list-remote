@@ -68,4 +68,4 @@ KZENV_REMOTE="${KZENV_REMOTE:-https://api.github.com/repos/kubernetes-sigs/kusto
 log 'debug' "KZENV_REMOTE: ${KZENV_REMOTE}";
 declare remote_versions="$(curl -sf "${KZENV_REMOTE}"|grep 'browser_download')";
 log 'debug' "Remote versions available: ${remote_versions}";
-curl -sf "${KZENV_REMOTE}" | grep 'browser_download'| awk '{print $2}'| grep -v 'checksum' | tr -d '"'
+curl -sf "${KZENV_REMOTE}" | grep 'browser_download'| awk '{print $2}'| grep -v -E 'checksum|api|pluginator|pseudo' | tr -d '"'
